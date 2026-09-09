@@ -3,7 +3,7 @@ import { listContainers } from "../../api/client";
 
 export function ContractsPage() {
   // TODO: use actual contract list endpoint when available
-  const { data: containers } = useQuery({
+  const { data: _containers } = useQuery({
     queryKey: ["containers"],
     queryFn: listContainers,
   });
