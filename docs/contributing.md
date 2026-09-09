@@ -40,7 +40,6 @@ See the CONTRIBUTING.md in each repo:
 
 - Check [open issues](https://github.com/StellarYard/stellaryard-core/issues) for `ready` tasks
 - Issues labeled `good-first-issue` are ideal for first-time contributors
-- See the [Drips Wave — Stellar](https://www.drips.network/wave/stellar) program for earning rewards
 
 ## Code of Conduct
 
