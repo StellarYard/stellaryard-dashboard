@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "test": "echo \"No tests configured yet\" && exit 0"
+    "test": "node --experimental-strip-types --test src/__tests__/*.test.ts"
   },
   "dependencies": {
     "react": "^18.2.0",
