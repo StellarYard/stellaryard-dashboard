@@ -8,6 +8,7 @@ import type {
   ContainerStatus,
   ContractDeployment,
   InvokeContractRequest,
+  InvokeResult,
   LedgerSnapshot,
   Transaction,
 } from "../types";
@@ -37,6 +38,11 @@ export async function startContainer(name: string): Promise<void> {
 
 export async function stopContainer(name: string): Promise<void> {
   await fetchJSON(`/containers/${name}/stop`, { method: "POST" });
+}
+
+export async function restartContainer(name: string): Promise<void> {
+  await stopContainer(name);
+  await startContainer(name);
 }
 
 // --- Accounts ---
@@ -69,14 +75,40 @@ export async function deployContract(
   });
 }
 
+export async function deployContractFile(
+  file: File,
+  deployedBy?: string
+): Promise<ContractDeployment> {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  return fetchJSON<ContractDeployment>("/contracts/deploy", {
+    method: "POST",
+    body: JSON.stringify({ wasmBase64: bytesToBase64(bytes), deployedBy }),
+  });
+}
+
+export async function listDeployments(): Promise<ContractDeployment[]> {
+  return fetchJSON<ContractDeployment[]>("/contracts/deployments");
+}
+
 export async function invokeContract(
   contractId: string,
   req: InvokeContractRequest
-): Promise<unknown> {
-  return fetchJSON(`/contracts/${contractId}/invoke`, {
+): Promise<InvokeResult> {
+  return fetchJSON<InvokeResult>(`/contracts/${contractId}/invoke`, {
     method: "POST",
     body: JSON.stringify(req),
   });
+}
+
+// bytesToBase64 encodes bytes as base64 in chunks so large WASM files don't
+// blow the call stack (String.fromCharCode(...) with huge spread args).
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
 }
 
 // --- Ledger ---
