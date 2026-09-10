@@ -35,12 +35,25 @@ export interface ContractDeployment {
 }
 
 export interface DeployContractRequest {
-  wasmPath: string;
+  /** Path on the core host (CLI). Provide exactly one of wasmPath or wasmBase64. */
+  wasmPath?: string;
+  /** Base64-encoded WASM binary (dashboard file upload). */
+  wasmBase64?: string;
+  /** Deployer account public key; defaults to the most recent managed account. */
+  deployedBy?: string;
 }
 
 export interface InvokeContractRequest {
   method: string;
   args: string[];
+  /** Signing account public key; defaults to the most recent managed account. */
+  sourceAccount?: string;
+}
+
+export interface InvokeResult {
+  txHash: string;
+  status: string;
+  resultXdr?: string;
 }
 
 export interface LedgerSnapshot {
