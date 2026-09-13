@@ -14,11 +14,14 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] Generate typed API client from `stellaryard-core`'s `openapi.yaml`; set up regeneration step — still hand-written `src/api/client.ts` (unit-tested)
 - [x] React Query setup, base layout, page routing (Containers / Accounts / Ledger / Contracts tabs)
 - [x] Shared "disconnected from core" component (banner + polling `useConnectionStatus` hook)
+- [x] Tab persisted in URL (pushState + popstate, restored on refresh, defaults to `/containers` for unknown paths)
 
 ## Phase 1 — Containers page
 
 - [x] Container status list + start/stop/restart controls — all three buttons wired via mutations with query invalidation (restart = stop + start)
-- [x] Live log viewer (WS consumption) — `LogViewer` connects to core's WS endpoint, reconnects with exponential backoff, and caps the buffer at 500 lines
+- [x] Live log viewer (WS consumption) — `LogViewer` connects to core's WS endpoint, reconnects with exponential backoff (1s–8s) that **stops after 5 failed attempts** and offers a Retry button, virtualizes rendering with react-window (1000-line buffer, oldest evicted), and has a Horizon / Soroban RPC selector (switch remounts the stream: WS closes, logs clear)
+- [x] `ContainerCard` component extracted (name, `StatusBadge`, formatted start time, state-disabled action buttons) — used by `ContainersPage`
+- [x] Per-page React error boundaries (`ErrorBoundary` class component wraps each page; render crashes show fallback with Try Again instead of killing the app)
 
 ## Phase 2 — Accounts page
 
@@ -58,15 +61,14 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - **CORS misconfiguration**: still not explicitly verified; the dev proxy handles it locally.
 - **WS reconnection**: now handled (exponential backoff, bounded buffer); no user-facing "reconnecting" state styling beyond a status line.
 - **Container status latency**: REST-fetched status may not reflect actual Docker state — unchanged.
-- **React error boundaries**: still missing; malformed core responses can crash a page.
-- **Log viewer performance**: capped at 500 lines; virtualization still not used.
+- **React error boundaries**: now addressed — per-page `ErrorBoundary` in `App.tsx`; a malformed core response shows a fallback with reset instead of crashing the app.
+- **Log viewer performance**: addressed — react-window `List` renders only visible rows; buffer capped at 1000 lines with oldest eviction.
 - **React Query cache invalidation**: deploy/create/container mutations now invalidate their queries.
 
 ## Edge cases not yet addressed
 
 - Zero-state UI — empty tables vs placeholders: pages render empty-state messages; not a designed system
 - Contract invoke args — free-text comma-separated with no ABI schema validation
-- Tab persistence on refresh — no URL routing, always starts on Containers
 - Multiple browser tabs — separate caches, no cross-tab sync
 - Large WASM uploads — no client-side size validation (magic bytes only)
 - Transaction detail XDR display — dependency on core Phase 3 unresolved
@@ -83,7 +85,7 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 - Transaction detail decoding depth — inherited unknown from `stellaryard-core/ROADMAP.md` Phase 3
 - Mobile/responsive scope — undecided, see Phase 5
-- Log viewer virtualization strategy — capped buffer chosen; virtualization undecided
+- Log viewer virtualization strategy — resolved: react-window virtualized list (1000-line cap). Remaining: run manual perf pass against high-throughput logs.
 - Error boundary strategy — per-page or app-level, not decided
 - Zero-state UI design — empty tables or illustrative placeholders, needs design decision
 - ESLint configuration — missing entirely, CI lint job cannot pass until added
