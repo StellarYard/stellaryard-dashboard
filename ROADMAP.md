@@ -48,6 +48,10 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] Mainnet UI elements — blocked on `stellaryard-core` shipping mainnet support
 - [ ] Dashboard auth/login — matches core's no-auth v1 assumption
 
+## Documentation site
+
+- [x] MkDocs `site_url` corrected to `https://stellaryard.github.io/stellaryard-dashboard/` — was pointing at `/stellaryard-docs/`, polluting canonical/sitemap/og:url metadata. (The deployed Pages site itself was always live; a local `ERR_CONNECTION_REFUSED` was client-side.)
+
 ## What would break
 
 - **Stale cache after core restart**: React Query `staleTime` not tuned; reconnect relies on `refetchInterval` + manual invalidation after mutations.
