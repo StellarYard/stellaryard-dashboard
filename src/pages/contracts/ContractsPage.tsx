@@ -58,24 +58,32 @@ export function ContractsPage() {
       <h2>Contracts</h2>
 
       <h3>Deploy Contract</h3>
-      {deployResult && <div className="success">{deployResult}</div>}
+      {deployResult && (
+        <div className="success" role="status">
+          {deployResult}
+        </div>
+      )}
       {deploy.error && (
-        <div className="error">Deployment failed: {String(deploy.error)}</div>
+        <div className="error" role="alert">
+          Deployment failed: {String(deploy.error)}
+        </div>
       )}
       <DeployForm onDeploy={(file) => deploy.mutate(file)} disabled={deploy.isPending} />
 
       <h3>Invoke Contract</h3>
       {invoke.error && (
-        <div className="error">Invocation failed: {String(invoke.error)}</div>
+        <div className="error" role="alert">
+          Invocation failed: {String(invoke.error)}
+        </div>
       )}
       {invokeResult && (
-        <div className="invoke-result">
+        <div className="invoke-result" role="status">
           <div>Transaction: {invokeResult.txHash}</div>
           <div>Status: {invokeResult.status}</div>
           {invokeResult.resultXdr && <div>Result XDR: {invokeResult.resultXdr}</div>}
         </div>
       )}
-      <form className="invoke-form" onSubmit={handleInvoke}>
+      <form className="invoke-form" onSubmit={handleInvoke} aria-label="Invoke contract">
         <div className="form-group">
           <label htmlFor="contract-id">Contract ID</label>
           <input
@@ -126,28 +134,34 @@ export function ContractsPage() {
 
       <h3>Deployment History</h3>
       {deployments.isLoading ? (
-        <div>Loading deployments...</div>
+        <div className="loading" role="status">
+          <span className="spinner" aria-hidden="true" />
+          Loading deployments...
+        </div>
       ) : deployments.data && deployments.data.length > 0 ? (
-        <table className="deploy-table">
-          <thead>
-            <tr>
-              <th>Contract ID</th>
-              <th>WASM Hash</th>
-              <th>Deployed By</th>
-              <th>Network</th>
-            </tr>
-          </thead>
-          <tbody>
-            {deployments.data.map((d) => (
-              <tr key={d.id}>
-                <td>{d.contractId}</td>
-                <td>{d.wasmHash}</td>
-                <td>{d.deployedBy}</td>
-                <td>{d.network}</td>
+        <div className="table-scroll">
+          <table className="deploy-table">
+            <caption className="sr-only">Contract deployment history</caption>
+            <thead>
+              <tr>
+                <th scope="col">Contract ID</th>
+                <th scope="col">WASM Hash</th>
+                <th scope="col">Deployed By</th>
+                <th scope="col">Network</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {deployments.data.map((d) => (
+                <tr key={d.id}>
+                  <td className="cell-mono cell-truncate">{d.contractId}</td>
+                  <td className="cell-mono cell-truncate">{d.wasmHash}</td>
+                  <td className="cell-truncate">{d.deployedBy}</td>
+                  <td>{d.network}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div className="empty-state">
           No deployments yet. Deploy a WASM contract to get started.

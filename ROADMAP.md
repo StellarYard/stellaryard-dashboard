@@ -44,9 +44,9 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 ## Phase 5 — Hardening (required for "100% ready")
 
 - [~] Error state handling audit — per-page error renders + mutation errors now exist; a full sweep of every page/state is still pending
-- [~] Accessibility pass (keyboard nav, screen reader labels) — Containers page basics done (aria-labels on buttons, sr-only badge descriptions, visible `:focus-visible` styles); other pages and contrast audit still pending
+- [~] Accessibility pass (keyboard nav, screen reader labels) — all four pages have the basics (labeled forms; tables with captions, `scope="col"`, and scroll wrappers; aria-labels; sr-only status text; `role=alert`/`role=status` results; visible `:focus-visible` styles); remaining: full WCAG audit and color-contrast testing
 - [ ] Runtime component tests (React Testing Library) — current tests are structural (`node:test` file assertions); runtime rendering/interaction tests still needed
-- [~] Responsive/mobile layout — Containers page done (cards stack < 768px, tabs wrap, usable at 320px); scope for other pages still undecided — **flag to maintainer rather than assuming either way**
+- [~] Responsive/mobile layout — all four pages usable on small screens (stacked container cards, horizontally scrollable tables with truncated hashes/keys, wrapping nav/forms < 768px, usable at 320px); full mobile-first redesign still out of scope — **flag to maintainer rather than assuming either way**
 
 ## Explicitly deferred
 

@@ -54,10 +54,10 @@ export function DeployForm({ onDeploy, disabled }: DeployFormProps) {
           onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
         />
         {error && <div className="error">{error}</div>}
-      </div>
-      <button type="submit" disabled={!file || disabled}>
-        Deploy
-      </button>
+      </div>        <button type="submit" disabled={!file || disabled}>
+          {disabled && <span className="button-spinner" aria-hidden="true" />}
+          Deploy
+        </button>
     </form>
   );
 }

@@ -135,6 +135,39 @@ th {
   background: #f9f9f9;
 }
 
+/* Wide tables (long hashes/keys) scroll horizontally on narrow screens
+   instead of blowing out the page layout. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+.cell-mono {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.cell-truncate {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
+.snapshot-data {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #444;
+}
+
 .form-group {
   margin-bottom: 12px;
 }

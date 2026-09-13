@@ -34,14 +34,25 @@ export function AccountsPage() {
     }
   };
 
-  if (isLoading) return <div>Loading accounts...</div>;
+  if (isLoading) {
+    return (
+      <div className="accounts-page">
+        <h2>Accounts</h2>
+        <div className="loading" role="status">
+          <span className="spinner" aria-hidden="true" />
+          Loading accounts...
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <div className="error">Failed to load accounts</div>;
 
   return (
     <div className="accounts-page">
       <h2>Accounts</h2>
 
-      <form className="account-create-form" onSubmit={handleSubmit}>
+      <form className="account-create-form" onSubmit={handleSubmit} aria-label="Create account">
         <div className="form-group">
           <label htmlFor="account-label">Label</label>
           <input
@@ -64,10 +75,11 @@ export function AccountsPage() {
           </select>
         </div>
         <button type="submit" disabled={!label.trim() || create.isPending}>
+          {create.isPending && <span className="button-spinner" aria-hidden="true" />}
           {create.isPending ? "Creating…" : "+ Create Account"}
         </button>
         {create.error && (
-          <div className="error">
+          <div className="error" role="alert">
             Account creation failed: {String(create.error)}
           </div>
         )}
@@ -79,26 +91,31 @@ export function AccountsPage() {
         </div>
       )}
 
-      <table className="account-table">
-        <thead>
-          <tr>
-            <th>Label</th>
-            <th>Public Key</th>
-            <th>Network</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {accounts?.map((a) => (
-            <tr key={a.id}>
-              <td>{a.label}</td>
-              <td>{a.publicKey}</td>
-              <td>{a.network}</td>
-              <td>{a.balance ?? "—"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {accounts && accounts.length > 0 && (
+        <div className="table-scroll">
+          <table className="account-table">
+            <caption className="sr-only">Managed accounts</caption>
+            <thead>
+              <tr>
+                <th scope="col">Label</th>
+                <th scope="col">Public Key</th>
+                <th scope="col">Network</th>
+                <th scope="col">Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {accounts.map((a) => (
+                <tr key={a.id}>
+                  <td>{a.label}</td>
+                  <td className="cell-mono cell-truncate">{a.publicKey}</td>
+                  <td>{a.network}</td>
+                  <td>{a.balance ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

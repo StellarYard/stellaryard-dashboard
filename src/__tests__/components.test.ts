@@ -190,3 +190,65 @@ describe("README documents the Containers page", () => {
     assert.ok(content.includes("Retry"));
   });
 });
+
+describe("A11y and responsive: Accounts page", () => {
+  const content = read("../pages/accounts/AccountsPage.tsx");
+
+  it("uses accessible table markup with scroll wrapper", () => {
+    assert.ok(content.includes('className="table-scroll"'));
+    assert.ok(content.includes('scope="col"'));
+    assert.ok(content.includes("sr-only"));
+  });
+
+  it("announces creation errors via role=alert and shows loading state", () => {
+    assert.ok(content.includes('role="alert"'));
+    assert.ok(content.includes('className="spinner"'));
+  });
+
+  it("truncates long public keys in monospace cells", () => {
+    assert.ok(content.includes("cell-mono cell-truncate"));
+  });
+});
+
+describe("A11y and responsive: Ledger page", () => {
+  const page = read("../pages/ledger/LedgerPage.tsx");
+  const table = read("../components/TxTable.tsx");
+
+  it("uses the shared TxTable component instead of an inline duplicate", () => {
+    assert.ok(page.includes('<TxTable transactions={transactions} />'));
+    assert.ok(!page.includes('className="tx-table"'));
+  });
+
+  it("announces tx status as text, not just emoji", () => {
+    assert.ok(table.includes("sr-only"));
+    assert.ok(table.includes('aria-hidden="true"'));
+  });
+
+  it("handles snapshot and transaction errors independently", () => {
+    assert.ok(page.includes("snapshotError"));
+    assert.ok(page.includes("txError"));
+  });
+
+  it("keeps the table scrollable on narrow screens", () => {
+    assert.ok(table.includes('className="table-scroll"'));
+  });
+});
+
+describe("A11y and responsive: Contracts page", () => {
+  const content = read("../pages/contracts/ContractsPage.tsx");
+  const form = read("../components/DeployForm.tsx");
+
+  it("announces deploy/invoke results and errors", () => {
+    assert.ok(content.includes('role="status"'));
+    assert.ok(content.includes('role="alert"'));
+  });
+
+  it("uses accessible history table with scroll wrapper and truncation", () => {
+    assert.ok(content.includes('className="table-scroll"'));
+    assert.ok(content.includes("cell-mono cell-truncate"));
+  });
+
+  it("shows a spinner on the deploy button while deploying", () => {
+    assert.ok(form.includes("button-spinner"));
+  });
+});

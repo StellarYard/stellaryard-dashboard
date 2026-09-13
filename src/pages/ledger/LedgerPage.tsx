@@ -1,59 +1,64 @@
 import { useQuery } from "@tanstack/react-query";
 import { getLedgerSnapshot, listTransactions } from "../../api/client";
+import { TxTable } from "../../components/TxTable";
 
 export function LedgerPage() {
-  const { data: snapshot, isLoading: snapshotLoading } = useQuery({
+  const {
+    data: snapshot,
+    isLoading: snapshotLoading,
+    error: snapshotError,
+  } = useQuery({
     queryKey: ["ledger", "snapshot"],
     queryFn: getLedgerSnapshot,
     refetchInterval: 5_000,
   });
 
-  const { data: transactions, isLoading: txLoading } = useQuery({
+  const {
+    data: transactions,
+    isLoading: txLoading,
+    error: txError,
+  } = useQuery({
     queryKey: ["ledger", "transactions"],
     queryFn: () => listTransactions(20, 0),
     refetchInterval: 5_000,
   });
 
-  if (snapshotLoading || txLoading) return <div>Loading ledger...</div>;
+  if (snapshotLoading || txLoading) {
+    return (
+      <div className="loading" role="status">
+        <span className="spinner" aria-hidden="true" />
+        Loading ledger...
+      </div>
+    );
+  }
 
   return (
     <div className="ledger-page">
       <h2>Ledger</h2>
 
-      <div className="snapshot">
+      {snapshotError && (
+        <div className="error">Failed to load ledger snapshot</div>
+      )}
+      <section className="snapshot" aria-label="Ledger snapshot">
         <h3>Ledger Snapshot</h3>
         {snapshot ? (
-          <div className="snapshot-data">
+          <div className="snapshot-data" role="status">
             <span>Sequence: {snapshot.sequence}</span>
             <span>Transactions: {snapshot.txCount}</span>
             <span>Updated: {new Date(snapshot.timestamp).toLocaleString()}</span>
           </div>
         ) : (
-          <div>No snapshot available</div>
+          !snapshotError && <div>No snapshot available</div>
         )}
-      </div>
+      </section>
 
       <h3>Recent Transactions</h3>
-      <table className="tx-table">
-        <thead>
-          <tr>
-            <th>Hash</th>
-            <th>Source</th>
-            <th>Fee</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions?.map((tx) => (
-            <tr key={tx.hash}>
-              <td>{tx.hash}</td>
-              <td>{tx.source}</td>
-              <td>{tx.fee}</td>
-              <td>{tx.success ? "✅" : "❌"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {txError && <div className="error">Failed to load transactions</div>}
+      {!txError && (transactions?.length ?? 0) === 0 ? (
+        <div className="empty-state">No transactions found</div>
+      ) : (
+        transactions && <TxTable transactions={transactions} />
+      )}
     </div>
   );
 }
