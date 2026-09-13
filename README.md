@@ -35,7 +35,36 @@ cd ../stellaryard-core && docker-compose up -d && go run cmd/server/main.go
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open `http://localhost:3000` in your browser.
+
+> **Note:** if core isn't running, the dashboard shows an explicit "Disconnected from core" banner — pages render error/empty states rather than stale data.
+
+## Containers Page
+
+The Containers page is the primary monitoring view for your local Stellar infrastructure.
+
+### Status cards
+
+- Each managed container (**horizon**, **soroban-rpc**) renders as a card with a color-coded status badge (green = running/healthy, yellow = running/degraded, red = stopped/error) and the container start time.
+- **Auto-refresh:** status polls adapt to activity — every **1s** while a container is transitioning (`starting`), every **5s** once everything is stable.
+
+### Action buttons
+
+- **Start / Stop / Restart** on every card (Restart = stop, then start).
+- Buttons disable themselves based on state (Start is disabled while running, Stop while stopped, Restart on error) and lock while an action is in flight — the clicked button shows a spinner, and a short success flash confirms completion.
+- After each action the status query is invalidated so cards reflect the new state immediately.
+
+### Log viewer
+
+- Real-time log streaming from core over WebSocket, with a **Horizon / Soroban RPC** selector (switching closes the old stream and clears the buffer).
+- Rendering is **virtualized** (react-window) with a **1000-line buffer** (oldest lines evicted) so high-throughput logs stay smooth; the view auto-scrolls as new lines arrive.
+- **Clear** empties the display without disconnecting; **Copy** puts all displayed lines on your clipboard (with a brief "Copied!" confirmation).
+
+### Connection loss & recovery
+
+- If the log WebSocket drops, the viewer reconnects automatically with exponential backoff (1s → 2s → 4s → 8s), showing `reconnecting… (attempt n/5)`.
+- After **5 failed attempts** it shows **Connection lost** with a **Retry** button; a successful reconnect resumes streaming.
+- The REST status list recovers on its own: when core comes back, the next poll repopulates the cards. While core is unreachable, the header shows **Disconnected from core** and pages render explicit error states — never a silent blank screen.
 
 ## Features
 
@@ -85,7 +114,7 @@ Open `http://localhost:5173` in your browser.
 |-----------|-----------|
 | Framework | React (function components + hooks) |
 | Language | TypeScript (strict) |
-| Styling | CSS Modules |
+| Styling | Plain CSS (single `src/index.css`) |
 | Data Fetching | React Query + native fetch |
 | Build Tool | Vite |
 
@@ -93,12 +122,12 @@ Open `http://localhost:5173` in your browser.
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| 0 — Foundation | Vite scaffold, API client, base layout | Not started |
-| 1 — Containers | Status list, controls, log viewer | Not started |
-| 2 — Accounts | Account list, create/fund | Not started |
-| 3 — Ledger | Transaction table, ledger snapshot | Not started |
-| 4 — Contracts | WASM deploy, invoke form | Not started |
-| 5 — Hardening | Error handling, accessibility, responsive | Not started |
+| 0 — Foundation | Vite scaffold, API client, base layout | ✅ Done |
+| 1 — Containers | Status list, controls, log viewer | ✅ Done |
+| 2 — Accounts | Account list, create/fund | ✅ Done |
+| 3 — Ledger | Transaction table, ledger snapshot | ✅ Done (detail view pending core) |
+| 4 — Contracts | WASM deploy, invoke form | ✅ Done |
+| 5 — Hardening | Error handling, accessibility, responsive | 🚧 In progress |
 
 Full roadmap: [`ROADMAP.md`](./ROADMAP.md)
 

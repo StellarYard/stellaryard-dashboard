@@ -92,3 +92,101 @@ describe("LogViewer container selector", () => {
     assert.ok(content.includes("MAX_LINES = 1000"));
   });
 });
+
+describe("Containers page loading + refresh tuning", () => {
+  const content = read("../pages/containers/ContainersPage.tsx");
+
+  it("tunes refetchInterval by container state", () => {
+    assert.ok(content.includes("refetchIntervalFor"));
+    assert.ok(content.includes("1_000")); // transitioning
+    assert.ok(content.includes("5_000")); // stable
+  });
+
+  it("shows spinner and skeleton placeholders while loading", () => {
+    assert.ok(content.includes('className="spinner"'));
+    assert.ok(content.includes("skeleton-card"));
+    assert.ok(content.includes('role="status"'));
+  });
+
+  it("only shows empty state after load completes", () => {
+    // Empty state render must come after the isLoading early-return.
+    const loadIdx = content.indexOf("isLoading");
+    const emptyIdx = content.indexOf("No containers found");
+    assert.ok(loadIdx !== -1 && emptyIdx > loadIdx);
+  });
+});
+
+describe("LogViewer clear/copy toolbar", () => {
+  const content = read("../components/LogViewer.tsx");
+
+  it("has Clear and Copy buttons with labels", () => {
+    assert.ok(content.includes('aria-label="Clear displayed logs"'));
+    assert.ok(content.includes('aria-label="Copy all displayed logs to clipboard"'));
+  });
+
+  it("clear only empties the display, not the WS connection", () => {
+    assert.ok(content.includes("const clearLogs = () => setLogs([]);"));
+  });
+
+  it("copies via navigator.clipboard with Copied confirmation", () => {
+    assert.ok(content.includes("navigator.clipboard.writeText"));
+    assert.ok(content.includes("Copied!"));
+  });
+});
+
+describe("Container action button polish", () => {
+  const content = read("../components/ContainerCard.tsx");
+
+  it("shows a spinner on the mutating button", () => {
+    assert.ok(content.includes("button-spinner"));
+    assert.ok(content.includes("start.isPending"));
+  });
+
+  it("flashes success after an action completes", () => {
+    assert.ok(content.includes("flash-success"));
+    assert.ok(content.includes("succeedWith"));
+  });
+
+  it("locks all buttons while a mutation is pending", () => {
+    assert.ok(content.includes(
+      "start.isPending || stop.isPending || restart.isPending"
+    ));
+  });
+});
+
+describe("Accessibility basics", () => {
+  const badge = read("../components/StatusBadge.tsx");
+  const card = read("../components/ContainerCard.tsx");
+  const css = read("../index.css");
+
+  it("status badges announce a full description to screen readers", () => {
+    assert.ok(badge.includes('role="status"'));
+    assert.ok(badge.includes("sr-only"));
+  });
+
+  it("action buttons have aria-labels and cards use semantic HTML", () => {
+    assert.ok(card.includes("aria-label="));
+    assert.ok(card.includes("<article"));
+  });
+
+  it("CSS provides visible focus styles and sr-only utility", () => {
+    assert.ok(css.includes(":focus-visible"));
+    assert.ok(css.includes(".sr-only"));
+  });
+
+  it("CSS has responsive breakpoints and spinner animation", () => {
+    assert.ok(css.includes("@media"));
+    assert.ok(css.includes("@keyframes spin"));
+  });
+});
+
+describe("README documents the Containers page", () => {
+  const content = read("../../README.md");
+
+  it("documents log viewer, buttons, refresh, and disconnect behavior", () => {
+    assert.ok(content.includes("## Containers Page"));
+    assert.ok(content.includes("**Auto-refresh:**"));
+    assert.ok(content.includes("Connection loss & recovery"));
+    assert.ok(content.includes("Retry"));
+  });
+});

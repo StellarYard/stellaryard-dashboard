@@ -22,6 +22,7 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Live log viewer (WS consumption) — `LogViewer` connects to core's WS endpoint, reconnects with exponential backoff (1s–8s) that **stops after 5 failed attempts** and offers a Retry button, virtualizes rendering with react-window (1000-line buffer, oldest evicted), and has a Horizon / Soroban RPC selector (switch remounts the stream: WS closes, logs clear)
 - [x] `ContainerCard` component extracted (name, `StatusBadge`, formatted start time, state-disabled action buttons) — used by `ContainersPage`
 - [x] Per-page React error boundaries (`ErrorBoundary` class component wraps each page; render crashes show fallback with Try Again instead of killing the app)
+- [x] Phase 1 polish — dynamic auto-refresh (1s while transitioning / 5s stable), spinner + skeleton loading states, Clear/Copy log toolbar with "Copied!" confirmation, per-button loading spinners + success flash with all-button lock, responsive Containers layout (cards stack < 768px, tabs wrap, usable at 320px), a11y basics on this page (aria-labels, sr-only badge text, visible focus styles), README Containers-page docs
 
 ## Phase 2 — Accounts page
 
@@ -43,8 +44,9 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 ## Phase 5 — Hardening (required for "100% ready")
 
 - [~] Error state handling audit — per-page error renders + mutation errors now exist; a full sweep of every page/state is still pending
-- [ ] Accessibility pass (keyboard nav, screen reader labels) — not addressed, needs explicit scoping
-- [ ] Responsive/mobile layout — still undecided whether in scope; **flag to maintainer rather than assuming either way**
+- [~] Accessibility pass (keyboard nav, screen reader labels) — Containers page basics done (aria-labels on buttons, sr-only badge descriptions, visible `:focus-visible` styles); other pages and contrast audit still pending
+- [ ] Runtime component tests (React Testing Library) — current tests are structural (`node:test` file assertions); runtime rendering/interaction tests still needed
+- [~] Responsive/mobile layout — Containers page done (cards stack < 768px, tabs wrap, usable at 320px); scope for other pages still undecided — **flag to maintainer rather than assuming either way**
 
 ## Explicitly deferred
 
@@ -86,6 +88,6 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - Transaction detail decoding depth — inherited unknown from `stellaryard-core/ROADMAP.md` Phase 3
 - Mobile/responsive scope — undecided, see Phase 5
 - Log viewer virtualization strategy — resolved: react-window virtualized list (1000-line cap). Remaining: run manual perf pass against high-throughput logs.
-- Error boundary strategy — per-page or app-level, not decided
+- Error boundary strategy — resolved: per-page boundaries (`ErrorBoundary` wrapped around the page area, keyed by active tab)
 - Zero-state UI design — empty tables or illustrative placeholders, needs design decision
 - ESLint configuration — missing entirely, CI lint job cannot pass until added
