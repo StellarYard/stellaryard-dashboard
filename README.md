@@ -39,6 +39,15 @@ Open `http://localhost:3000` in your browser.
 
 > **Note:** if core isn't running, the dashboard shows an explicit "Disconnected from core" banner — pages render error/empty states rather than stale data.
 
+### Production Deployment & Trusted Reverse Proxy
+
+In production, the dashboard is deployed behind a trusted same-origin reverse proxy (or Backend-For-Frontend). Configuration templates are provided in [`deploy/`](./deploy/):
+
+- [`deploy/nginx.conf`](./deploy/nginx.conf): Nginx configuration serving static assets, proxying `/api/` with WebSocket upgrade support, and injecting `Authorization: Bearer <key>` upstream.
+- [`deploy/Caddyfile`](./deploy/Caddyfile): Caddy reverse proxy template with upstream token injection.
+
+This architecture ensures browser WebSockets authenticate securely without leaking API tokens into frontend bundles, URLs, or browser-accessible persistent storage.
+
 ## Containers Page
 
 The Containers page is the primary monitoring view for your local Stellar infrastructure.

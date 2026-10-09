@@ -1,0 +1,29 @@
+# StellarYard Dashboard - Production Reverse Proxy Configuration (Caddy)
+#
+# ARCHITECTURE & SECURITY BOUNDARY:
+# Caddy acts as the trusted same-origin boundary (BFF) between the browser and stellaryard-core:
+# - Serves pre-built static assets (dist/)
+# - Forwards API and WebSocket requests with upstream Authorization header injection
+# - Keeps API secrets server-side, preventing leakage into browser storage or URLs
+
+:80 {
+    root * /var/www/html
+    file_server
+
+    # Forward API and WebSocket requests to stellaryard-core
+    handle /api/* {
+        reverse_proxy http://stellaryard-core:8080 {
+            header_up Authorization "Bearer {env.STELLARYARD_API_KEY}"
+        }
+    }
+
+    # Public health check
+    handle /health {
+        reverse_proxy http://stellaryard-core:8080
+    }
+
+    # SPA routing fallback
+    handle {
+        try_files {path} /index.html
+    }
+}

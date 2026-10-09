@@ -35,21 +35,24 @@ This security policy applies to:
 
 ## Key Security Considerations
 
-### API Communication
+### API Communication & Trusted Proxy Boundary
 
-The dashboard communicates with stellaryard-core over HTTP/WS. Ensure the API URL points to a trusted local instance.
+The dashboard communicates with stellaryard-core over HTTP/WS. In development, Vite's dev server acts as a same-origin reverse proxy (`http://localhost:3000/api` -> `http://127.0.0.1:8080/api`). In production, a reverse proxy (e.g. Nginx or Caddy) must sit in front of the application to serve static assets and proxy API requests.
 
-### WebSocket Connections
+### WebSocket Authentication & Security
 
-WebSocket connections to core should use appropriate reconnection logic. Sensitive data should not be logged or stored in browser storage.
+Browser-native `WebSocket` APIs cannot set arbitrary HTTP headers (such as `Authorization: Bearer <token>`). To maintain strict security without compromising credentials:
+- **No Query-String Tokens:** Secrets or API keys are **never** passed in WebSocket URLs or query strings (`?token=...`), preventing token leakage in browser history, proxy access logs, and HTTP referrers.
+- **Trusted Boundary Injection:** When connecting to a protected or non-loopback `stellaryard-core` instance requiring an API key, the same-origin reverse proxy or Backend-For-Frontend (BFF) securely injects the `Authorization: Bearer <key>` header on upstream HTTP requests and WebSocket upgrades.
+- **Client Bundle Isolation:** API keys and credentials are never stored in client bundles, `localStorage`, `sessionStorage`, or cookies accessible to client scripts.
 
 ### Client-Side Data
 
 The dashboard holds no persistent state. All data comes from core. Do not add localStorage or sessionStorage for sensitive data.
 
-### CORS
+### CORS & Origin Validation
 
-The dashboard relies on core's CORS configuration. If modifying CORS settings, ensure only trusted origins are allowed.
+Core strictly enforces Origin validation. When connecting via WebSocket, only approved development origins (`localhost:3000`, `127.0.0.1:3000`) or explicitly configured `STELLARYARD_ALLOWED_ORIGINS` are accepted.
 
 ## Disclosure Policy
 
