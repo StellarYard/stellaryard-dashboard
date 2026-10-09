@@ -51,4 +51,4 @@ Explicit "disconnected from core" UI state — do not let this silently show sta
 - `disconnected from core` as a shared component (simple conditional render would suffice)
 
 ## When in doubt
-If a Wave issue would require adding a new backend endpoint to make a dashboard feature work — stop, that's a core repo issue first, not something to fake client-side.
+If an issue or PR would require adding a new backend endpoint to make a dashboard feature work — stop, that's a core repo issue first, not something to fake client-side.

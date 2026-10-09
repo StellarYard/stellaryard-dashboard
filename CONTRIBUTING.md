@@ -10,8 +10,8 @@ Be respectful, constructive, and professional. We're building tools for the Stel
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 22.6+
+- npm
 - stellaryard-core running locally (for API calls)
 
 ### Setup

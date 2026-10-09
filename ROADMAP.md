@@ -6,7 +6,7 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ## Blocking dependency
 
-- [x] **`stellaryard-core`'s `/api/openapi.yaml` has been merged.** The API client is still hand-written but matches the spec; core now serves real data for every endpoint the pages consume (including `wasmBase64` deploy and `GET /contracts/deployments`).
+- [x] **`stellaryard-core`'s `/api/openapi.yaml` has been merged.** The API client is hand-written against the spec. UI is wired for all four pages, pending core completion of contract deployment and live Horizon querying.
 
 ## Phase 0 — Foundation
 
@@ -26,20 +26,20 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ## Phase 2 — Accounts page
 
-- [x] Account list + balances — balance column populated from Horizon
+- [~] Account list + balances — UI table wired to `GET /accounts`; balance lookup pending core Horizon integration
 - [x] Create/fund account form — label + network (local/testnet), wired to `POST /accounts` with invalidation
 
 ## Phase 3 — Ledger page
 
-- [x] Recent transactions table
-- [x] Ledger snapshot display
+- [~] Recent transactions table — UI table wired to `GET /ledger/transactions` (core returns placeholder)
+- [~] Ledger snapshot display — UI cards wired to `GET /ledger/snapshot` (core returns placeholder)
 - [ ] Transaction detail view (depends on core Phase 3 XDR-decoding decision — do not start until that's resolved in `stellaryard-core/ROADMAP.md`)
 
 ## Phase 4 — Contracts page
 
-- [x] WASM upload/deploy form — `DeployForm` reads the file, validates WASM magic bytes client-side, and deploys via `wasmBase64`
-- [x] Contract invoke form (method + args + optional source account) with result display
-- [x] Deployment history list — from `GET /contracts/deployments`, invalidated on successful deploy
+- [~] WASM upload/deploy form — `DeployForm` validates WASM magic bytes client-side; wired to `POST /contracts/deploy` (core returns 501)
+- [~] Contract invoke form (method + args + optional source account) with result display (core returns 501)
+- [~] Deployment history list — UI table wired to `GET /contracts/deployments` (core endpoint pending)
 
 ## Phase 5 — Hardening (required for "100% ready")
 

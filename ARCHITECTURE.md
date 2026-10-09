@@ -2,15 +2,15 @@
 
 ## Tech Stack
 
-- **Framework**: React (function components + hooks only, no class components — keeps the codebase approachable for Wave contributors of varying experience)
-- **Language**: TypeScript (strict mode) — given this is a multi-contributor, loosely-coordinated Wave project, type safety against core's API contract catches integration bugs at compile time rather than runtime
+- **Framework**: React (function components + hooks only, no class components — keeps the codebase approachable for contributors of varying experience)
+- **Language**: TypeScript (strict mode) — given this is a multi-contributor project, type safety against core's API contract catches integration bugs at compile time rather than runtime
 - **Styling**: plain CSS modules (no heavy CSS-in-JS dependency — keeps individual component PRs simple to review)
 - **Data fetching**: a thin typed API client generated/maintained from core's `openapi.yaml` (see below) + native `fetch`; no heavyweight state management library needed for v1 — React Query (`@tanstack/react-query`) for server-state caching and WS reconciliation is the one exception, justified because it directly solves the "core restarted, is my data stale" problem this dashboard cares about.
 - **Build**: Vite
 
 ## Why This Stack
 
-React + TypeScript was chosen over a heavier framework (Next.js, etc.) because this dashboard doesn't need server-side rendering or routing complexity — it's a single-page local tool. Adding Next.js would add build complexity with no corresponding benefit for a localhost-only app. Vite keeps dev-loop iteration fast, which matters when Wave contributors are working under a 7-day cycle.
+React + TypeScript was chosen over a heavier framework (Next.js, etc.) because this dashboard doesn't need server-side rendering or routing complexity — it's a single-page local tool. Adding Next.js would add build complexity with no corresponding benefit for a localhost-only app. Vite keeps dev-loop iteration fast, which matters for rapid development and straightforward testing.
 
 ## System Overview
 
@@ -40,7 +40,7 @@ React + TypeScript was chosen over a heavier framework (Next.js, etc.) because t
 
 ## Data Models
 
-Dashboard does not define its own domain models — it imports/mirrors types generated from `stellaryard-core`'s `openapi.yaml`. This is deliberate: maintaining a second, hand-written copy of `Account`, `ContainerStatus`, etc. in this repo is exactly the kind of drift that breaks multi-repo Wave projects. If core's schema changes, dashboard's types should be regenerated, not manually patched.
+Dashboard does not define its own domain models — it imports/mirrors types generated from `stellaryard-core`'s `openapi.yaml`. This is deliberate: maintaining a second, hand-written copy of `Account`, `ContainerStatus`, etc. in this repo is exactly the kind of drift that breaks multi-repo projects. If core's schema changes, dashboard's types should be regenerated, not manually patched.
 
 ```ts
 // Illustrative shape — actual source is generated, not hand-maintained here.

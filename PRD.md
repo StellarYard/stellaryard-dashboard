@@ -10,7 +10,7 @@ This repo has no business logic of its own. If a feature requires new backend ca
 
 - Stellar/Soroban developers who want to see and control their local network state (containers, accounts, contracts, ledger activity) without memorizing CLI flags or reading raw JSON from curl.
 - Developers debugging contract behavior who want a readable transaction/log view instead of scrolling raw Docker logs.
-- Wave contributors building individual UI components/pages against a fixed, already-defined core API — this repo is intentionally the easiest of the three to contribute isolated, low-coordination-cost issues against.
+- Contributors building individual UI components/pages against a fixed, already-defined core API — this repo is intentionally structured for isolated, low-coordination-cost contributions.
 
 ## What The Product Actually Needs To Do
 
@@ -32,7 +32,7 @@ This repo has no business logic of its own. If a feature requires new backend ca
 
 - A developer can go from "containers are off" to "contract deployed and invoked" without touching a terminal.
 - Every dashboard feature maps to an existing core API endpoint — no dashboard PR should require inventing new backend behavior inline.
-- New UI components (e.g., a transaction detail modal) should be buildable as an isolated Wave issue without needing to understand the Docker orchestration or signer internals in core.
+- New UI components (e.g., a transaction detail modal) should be buildable as an isolated issue without needing to understand the Docker orchestration or signer internals in core.
 
 ## What Would Break
 
